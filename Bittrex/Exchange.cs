@@ -151,7 +151,8 @@ namespace Bittrex
 
         private string GetMarketName(string market)
         {
-            return this.quoteCurrency + "-" + market;
+            return //this.quoteCurrency + "-" +
+                market;
         }
 
         private T Call<T>(string method, params Tuple<string, string>[] parameters)

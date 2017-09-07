@@ -10,6 +10,11 @@ namespace Bittrex_App.State
     public class MemoDati
     {
         
-        public GetBalancesResponse Bilancio { get; set; }
+        public List<AccountBalance> Bilancio { get; set; }
+    }
+    public class StatoConto: AccountBalance
+    {
+        public decimal ActualValue { get; set; }
+
     }
 }
