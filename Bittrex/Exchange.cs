@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Bittrex.Data;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -76,14 +77,22 @@ namespace Bittrex
             return this.Call<dynamic>(ApiCallGetMarkets);
         }
 
-        public dynamic GetTicker(string market)
+        public Ticker GetTicker(string market)
         {
-            return this.Call<dynamic>(ApiCallGetTicker, Tuple.Create("market", GetMarketName(market)));
+            return this.Call<Ticker>(ApiCallGetTicker, Tuple.Create("market", GetMarketName(market)));
         }
 
-        public GetOpenOrdersResponse GetOpenOrders(string market)
+        public GetOpenOrdersResponse GetOpenOrders(string market = "")
         {
+
+            if (market=="")
+            {
+                return this.Call<GetOpenOrdersResponse>(ApiCallGetOpenOrders);
+
+            }
+
             return this.Call<GetOpenOrdersResponse>(ApiCallGetOpenOrders, Tuple.Create("market", GetMarketName(market)));
+
         }
 
         public void CancelOrder(string uuid)
@@ -131,9 +140,18 @@ namespace Bittrex
                 Tuple.Create("market", GetMarketName(market))).Single();
         }
 
-        public GetOrderHistoryResponse GetOrderHistory(string market, int count = 20)
+        public GetOrderHistoryResponse GetOrderHistory(string market="", int count = 20)
         {
+            if (market=="")
+            {
+                return this.Call<GetOrderHistoryResponse>(ApiCallGetOrderHistory,
+
+                    Tuple.Create("count", count.ToString()));
+
+            }
+            else
             return this.Call<GetOrderHistoryResponse>(ApiCallGetOrderHistory,
+
                 Tuple.Create("market", GetMarketName(market)),
                 Tuple.Create("count", count.ToString()));
         }
