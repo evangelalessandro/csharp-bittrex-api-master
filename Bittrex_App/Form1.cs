@@ -49,5 +49,11 @@ namespace Bittrex_App
             gvBalance.Refresh();
 
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            _manager.AggiornaSommarioMarket();
+
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Bittrex_App
 {
@@ -18,7 +19,17 @@ namespace Bittrex_App
 
         public Manager()
         {
+            if (!File.Exists(Environment.CurrentDirectory + @"\key.txt"))
+            {
+
+                File.Create(Environment.CurrentDirectory + @"\key.txt").Close();
+                File.AppendAllText(Environment.CurrentDirectory + @"\key.txt", "ApiKey=" + Environment.NewLine + "SecretKey=");
+                MessageBox.Show("Imposta key e secretKey nel file "+ Environment.CurrentDirectory + @"\key.txt");
+                return;
+            }
             var chiavi = File.ReadLines(Environment.CurrentDirectory + @"\key.txt");
+
+            //0828009968044390b96a3ad3b4d58f6d
             //SecretKey=asfasfsaaaa
             //ApiKey = asfasfd
 
@@ -29,6 +40,21 @@ namespace Bittrex_App
             _exchange.Initialise(_context);
 
         }
+
+        internal void AggiornaSommarioMarket()
+        {
+            try
+            {
+               var dato= _exchange.GetMarketSummaries();
+               Db.StorioMercato.AddRange(dato.ToList());
+                
+            }
+            catch (Exception ex)
+            {
+                Db.Errori.Add(new ErrorItem(ex));
+            }
+        }
+
         public void AggiornaTutto()
         {
             AggiornaBilancio();

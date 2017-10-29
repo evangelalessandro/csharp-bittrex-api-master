@@ -8,6 +8,11 @@ namespace Bittrex_App.Classes
 {
     public class ErrorItem
     {
+        public ErrorItem(Exception ex)
+            :
+            this(ex.Message)
+        {
+        }
         public ErrorItem(string ex)
         {
             Errore = ex;

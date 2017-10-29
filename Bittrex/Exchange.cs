@@ -21,6 +21,7 @@ namespace Bittrex
         const string ApiCallGetOrderBook = "public/getorderbook";
         const string ApiCallGetMarketHistory = "public/getmarkethistory";
         const string ApiCallGetMarketSummary = "public/getmarketsummary";
+        const string ApiCallGetMarketSummaries = "public/getmarketsummaries";
 
         const string ApiCallGetBalances = "account/getbalances";
         const string ApiCallGetBalance = "account/getbalance";
@@ -133,7 +134,10 @@ namespace Bittrex
                 Tuple.Create("market", GetMarketName(market)),
                 Tuple.Create("count", count.ToString()));
         }
-
+        public GetMarketSummaryResponse[] GetMarketSummaries()
+        {
+            return this.Call<GetMarketSummaryResponse[]>(ApiCallGetMarketSummaries);
+        }
         public GetMarketSummaryResponse GetMarketSummary(string market)
         {
             return this.Call<GetMarketSummaryResponse[]>(ApiCallGetMarketSummary,

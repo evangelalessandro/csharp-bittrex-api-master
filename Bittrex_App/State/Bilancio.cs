@@ -22,6 +22,7 @@ namespace Bittrex_App.State
 
         public GetOpenOrdersResponse  OpenOrder { get; set; } = new GetOpenOrdersResponse();
         public GetOrderHistoryResponse OrderHistory { get; internal set; }
+        public List<GetMarketSummaryResponse> StorioMercato { get; set; }
     }
     public class StatoConto: AccountBalance
     {

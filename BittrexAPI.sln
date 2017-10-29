@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bittrex", "Bittrex\Bittrex.csproj", "{AAA8321A-42F8-43DB-BE5E-544072C9BF58}"
 EndProject
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{47228E
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bittrex_App", "Bittrex_App\Bittrex_App.csproj", "{DD25400D-7496-4A60-9EA1-7BDFCD72968F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitRexSql", "BitRexSql\BitRexSql.csproj", "{1EBA36E3-C443-4E28-A864-F7F466B11126}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,8 +30,15 @@ Global
 		{DD25400D-7496-4A60-9EA1-7BDFCD72968F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD25400D-7496-4A60-9EA1-7BDFCD72968F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD25400D-7496-4A60-9EA1-7BDFCD72968F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EBA36E3-C443-4E28-A864-F7F466B11126}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EBA36E3-C443-4E28-A864-F7F466B11126}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EBA36E3-C443-4E28-A864-F7F466B11126}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EBA36E3-C443-4E28-A864-F7F466B11126}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B5C0C65-60F0-452A-AEB0-3AB9C1C48B03}
 	EndGlobalSection
 EndGlobal
