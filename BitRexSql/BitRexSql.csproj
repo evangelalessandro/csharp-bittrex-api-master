@@ -50,12 +50,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="Entity\MarketSummaryResponse.cs" />
     <Compile Include="ModelBitRex\ModelBitRex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repo\IRepository.cs" />
+    <Compile Include="Repo\Repository.cs" />
+    <Compile Include="Repo\UnifOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bittrex\Bittrex.csproj">
+      <Project>{AAA8321A-42F8-43DB-BE5E-544072C9BF58}</Project>
+      <Name>Bittrex</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

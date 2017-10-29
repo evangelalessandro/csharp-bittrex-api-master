@@ -1,4 +1,5 @@
-﻿using Bittrex;
+﻿using BitRexSql.Repo.RepoAndUnitOfWork.Domain.Concrete;
+using Bittrex;
 using Bittrex.Data;
 using Bittrex_App.Classes;
 using System;
@@ -46,15 +47,30 @@ namespace Bittrex_App
             try
             {
                var dato= _exchange.GetMarketSummaries();
-               Db.StorioMercato.AddRange(dato.ToList());
-                
+                using (UnitOfWork unitOfWork = new UnitOfWork())
+                {
+                    foreach (var item in dato.ToList())
+                    {
+                        unitOfWork.MarketSummaryResponseRepository.Add(item);
+
+                    }
+                    unitOfWork.Commit();
+                }
             }
             catch (Exception ex)
             {
                 Db.Errori.Add(new ErrorItem(ex));
             }
         }
+        public void FixEfProviderServicesProblem()
+        {
+            //The Entity Framework provider type 'System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer'
+            //for the 'System.Data.SqlClient' ADO.NET provider could not be loaded. 
+            //Make sure the provider assembly is available to the running application. 
+            //See http://go.microsoft.com/fwlink/?LinkId=260882 for more information.
 
+            var instance = System.Data.Entity.SqlServer.SqlProviderServices.Instance;
+        }
         public void AggiornaTutto()
         {
             AggiornaBilancio();

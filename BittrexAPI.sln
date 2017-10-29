@@ -13,8 +13,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{47228E
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bittrex_App", "Bittrex_App\Bittrex_App.csproj", "{DD25400D-7496-4A60-9EA1-7BDFCD72968F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1EBA36E3-C443-4E28-A864-F7F466B11126} = {1EBA36E3-C443-4E28-A864-F7F466B11126}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitRexSql", "BitRexSql\BitRexSql.csproj", "{1EBA36E3-C443-4E28-A864-F7F466B11126}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AAA8321A-42F8-43DB-BE5E-544072C9BF58} = {AAA8321A-42F8-43DB-BE5E-544072C9BF58}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
