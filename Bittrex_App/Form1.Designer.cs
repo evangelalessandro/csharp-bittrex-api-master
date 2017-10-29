@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
             this.gvBalance = new System.Windows.Forms.DataGridView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -52,16 +51,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.gvErrori)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(541, 448);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Refresh";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // gvBalance
             // 
@@ -90,10 +79,10 @@
             this.tabPage1.Controls.Add(this.pnlTab01Parte02);
             this.tabPage1.Controls.Add(this.splitter1);
             this.tabPage1.Controls.Add(this.panel1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 33);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(785, 416);
+            this.tabPage1.Size = new System.Drawing.Size(785, 405);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -104,7 +93,7 @@
             this.pnlTab01Parte02.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlTab01Parte02.Location = new System.Drawing.Point(3, 106);
             this.pnlTab01Parte02.Name = "pnlTab01Parte02";
-            this.pnlTab01Parte02.Size = new System.Drawing.Size(779, 307);
+            this.pnlTab01Parte02.Size = new System.Drawing.Size(779, 296);
             this.pnlTab01Parte02.TabIndex = 6;
             // 
             // gvStato
@@ -113,7 +102,7 @@
             this.gvStato.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gvStato.Location = new System.Drawing.Point(0, 0);
             this.gvStato.Name = "gvStato";
-            this.gvStato.Size = new System.Drawing.Size(779, 307);
+            this.gvStato.Size = new System.Drawing.Size(779, 296);
             this.gvStato.TabIndex = 4;
             // 
             // splitter1
@@ -203,9 +192,9 @@
             this.ClientSize = new System.Drawing.Size(793, 641);
             this.Controls.Add(this.btnAggiornaStatoMercato);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.button1);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.gvBalance)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -221,8 +210,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.DataGridView gvBalance;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;

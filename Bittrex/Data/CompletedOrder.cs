@@ -24,5 +24,7 @@ namespace Bittrex
         public string Condition { get; set; }
         public string ConditionTarget { get; set; }
         public bool ImmediateOrCancel { get; set; }
+        public bool DaNonConsiderareNelBilancio { get; set; }
+
     }
 }

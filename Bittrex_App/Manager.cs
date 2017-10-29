@@ -17,7 +17,7 @@ namespace Bittrex_App
     class Manager
     {
         ExchangeContext _context = new ExchangeContext();
-        public  Exchange Exchange { get; internal set; } = new Exchange();
+        public Exchange Exchange { get; internal set; } = new Exchange();
         public State.MemoDati Db { get; set; } = new State.MemoDati();
         public BotCompratore Bot { get; internal set; }
 
@@ -57,7 +57,7 @@ namespace Bittrex_App
                     foreach (var item in dato.ToList().Where(a => a.MarketName.StartsWith("BTC")))
                     {
                         if (unitOfWork.MarketSummaryResponseRepository
-                            .Find(a => a.MarketName == item.MarketName).Select(a=>a.TimeStamp).ToList().Where(a=>item.TimeStamp == a).Count() == 0)
+                            .Find(a => a.MarketName == item.MarketName).Select(a => a.TimeStamp).ToList().Where(a => item.TimeStamp == a).Count() == 0)
                         {
                             try
                             {
@@ -87,7 +87,7 @@ namespace Bittrex_App
             {
                 unitOfWork.EventLogRepository.Add(new BitRexSql.Entity.EventLog()
                 {
-                    Errore = events,
+                    Evento = events,
                     TipoEvento = logType.ToString(),
                 });
                 unitOfWork.Commit();
@@ -172,21 +172,77 @@ namespace Bittrex_App
                     }
                     catch (Exception ex)
                     {
-                       Log(ex);
+                        Log(ex);
                     }
                 }
             }
             Db.StatoConto = conti;
         }
+        /// <summary>
+        /// Aggiorna la lista degli ordini aperti prima prendendola da internet e poi aggiornando quella a db
+        /// </summary>
+        public void AggiornaOrdiniAperti()
+        {
+            try
+            {
+                Log("Aggiornamento lista ordini aperti", LogType.ReadDataFromInternet);
+                Db.OpenOrder = Exchange.GetOpenOrders();
+                using (var uof = new UnitOfWork())
+                {
+                    foreach (var item in Db.OpenOrder)
+                    {
+                        if (uof.OpenOrderRepository.Find(a => item.OrderUuid == a.OrderUuid).Count() == 0)
+                        {
+                            //se non lo trova nel db è da aggiungere
+                            uof.OpenOrderRepository.Add(item);
+                            Log("Aggiunto ordine aperto non presente a db " + item.OrderUuid + " " + item.Exchange
+                                + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
+                                LogType.Information);
+                        }
+                        else if (uof.OpenOrderRepository.Find(a => item.OrderUuid == a.OrderUuid && a.Quantity == item.Quantity && a.Quantity == item.QuantityRemaining).Count() == 1)
+                        {
+                            //non deve fare nulla perchè non è cambiato
+                        }
+                        else
+                        {
+                            var itemToUpdate = uof.OpenOrderRepository.Find(a => item.OrderUuid == a.OrderUuid &&
+                              (a.Quantity != item.Quantity || a.Quantity != item.QuantityRemaining)).FirstOrDefault();
+
+                            Log("Aggiornato ordine aperto " + item.OrderUuid + " " + item.Exchange
+                                + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
+                                LogType.Information);
+                            uof.OpenOrderRepository.Update(itemToUpdate);
+                        }
+                    }
+                    uof.Commit();
+                    //cancellazione degli ordini non più presenti
+                    var listOrdInDB = uof.OpenOrderRepository.Find(a => 1 == 1).Select(a => a.Uuid).ToList();
+                    var itemToDelete = listOrdInDB.Except(Db.OpenOrder.Select(a => a.Uuid).ToList());
+                    foreach (var itemID in itemToDelete)
+                    {
+                        var item = uof.OpenOrderRepository.Find(a => a.Uuid == itemID).First();
+
+                        Log("Cancellato ordine non più presente in internet " + item.Uuid + " " + item.Exchange
+                            + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
+                            LogType.Information);
+                        uof.OpenOrderRepository.Delete(item);
+                    }
+                    uof.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ex);
+            }
+        }
         public void AggiornaOrdini()
         {
-            Db.OpenOrder = Exchange.GetOpenOrders();
-            Db.OrderHistory = Exchange.GetOrderHistory("");
-
-
+            AggiornaOrdiniAperti();
+            AggiornaOrdiniCompletati();
+            
             foreach (var item in Db.StatoConto)
             {
-                var datiXCurrency = Db.OrderHistory.Where(a => a.Exchange == "BTC-" + item.Currency).ToList();
+                var datiXCurrency = Db.OrderHistory.Where(a => a.Exchange == "BTC-" + item.Currency && a.DaNonConsiderareNelBilancio==false).ToList();
                 item.CostoDiVenditaMinimoPerNonPerdere = 0;
                 if (datiXCurrency.Count != 0)
                 {
@@ -204,7 +260,67 @@ namespace Bittrex_App
                 }
             }
         }
-         
 
+        private void AggiornaOrdiniCompletati()
+        {
+            try
+            {
+                Log("Aggiornamento lista ordini completati", LogType.ReadDataFromInternet);
+                Db.OrderHistory = Exchange.GetOrderHistory("");
+                using (var uof = new UnitOfWork())
+                {
+                    foreach (var item in Db.OrderHistory)
+                    {
+                        if (uof.CompletedOrderRepository.Find(a => item.OrderUuid == a.OrderUuid).Count() == 0)
+                        {
+                            //se non lo trova nel db è da aggiungere
+                            uof.CompletedOrderRepository.Add(item);
+                            Log("Aggiunto ordine aperto non presente a db " + item.OrderUuid + " " + item.Exchange
+                                + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
+                                LogType.Information);
+                        }
+                        else if (uof.CompletedOrderRepository.Find(a => item.OrderUuid == a.OrderUuid 
+                                    && a.Quantity == item.Quantity 
+                                    && a.Quantity == item.QuantityRemaining).Count() == 1)
+                        {
+                            //non deve fare nulla perchè non è cambiato
+                        }
+                        else
+                        {
+                            var itemToUpdate = uof.CompletedOrderRepository.Find(a => item.OrderUuid == a.OrderUuid &&
+                              (a.Quantity != item.Quantity || a.Quantity != item.QuantityRemaining)).FirstOrDefault();
+
+                            Log("Aggiornato ordine chiuso " + item.OrderUuid + " " + item.Exchange
+                                + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
+                                LogType.Information);
+                            uof.CompletedOrderRepository.Update(itemToUpdate);
+                        }
+                    }
+                    uof.Commit();
+                    Db.OrderHistory = uof.CompletedOrderRepository.Find(a => 1 == 1).ToList();
+
+                    //*non li cancello quelli vecchi così posso marcarli da non considerare per i conti sul prezzo medio di acquisto *//
+
+                    ////cancellazione degli ordini non più presenti
+                    //var listOrdInDB = uof.CompletedOrderRepository.Find(a => 1 == 1).Select(a => a.OrderUuid).ToList();
+                    //var itemToDelete = listOrdInDB.Except(Db.OrderHistory.Select(a => a.OrderUuid).ToList());
+                    //foreach (var itemID in itemToDelete)
+                    //{
+                    //    var item = uof.CompletedOrderRepository.Find(a => a.OrderUuid == itemID).First();
+
+                    //    Log("Cancellato storico ordine non più presente in internet " + item.OrderUuid + " " + item.Exchange
+                    //        + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
+                    //        LogType.Information);
+                    //    uof.CompletedOrderRepository.Delete(item);
+                    //}
+                    //uof.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ex);
+            }
+
+        }
     }
 }

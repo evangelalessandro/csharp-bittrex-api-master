@@ -69,7 +69,6 @@ namespace BitRexSql.Repo
                     }
                     return _OpenOrderRepository;
                 }
-
             }
 
 

@@ -45,14 +45,7 @@ namespace Bittrex_App
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-            AggiornaBilancio();
-            RefreshConti();
-
-        }
-
+         
         private void RefreshConti()
         {
             gvStato.DataSource = _manager.Db.StatoConto;
@@ -124,6 +117,12 @@ namespace Bittrex_App
                 SetText("Fermato aggiornamento automatico");
             }
 
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            AggiornaBilancio();
+            RefreshConti();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Bittrex_App.State
         public List<AccountBalance> Bilancio { get; set; } = new List<AccountBalance>();
 
         public GetOpenOrdersResponse  OpenOrder { get; set; } = new GetOpenOrdersResponse();
-        public GetOrderHistoryResponse OrderHistory { get; internal set; }
+        public List<CompletedOrder> OrderHistory { get; internal set; }
         public List<GetMarketSummaryResponse> StorioMercato { get; set; }
     }
     public class StatoConto: AccountBalance

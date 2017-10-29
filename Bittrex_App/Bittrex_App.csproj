@@ -53,8 +53,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\ErroriList.cs" />
-    <Compile Include="Classes\ErrorItem.cs" />
     <Compile Include="Classes\Utility.cs" />
     <Compile Include="Classes\LogType.cs" />
     <Compile Include="CompratoreAutomatico\BotCompratore.cs" />

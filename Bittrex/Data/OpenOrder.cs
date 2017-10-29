@@ -10,11 +10,8 @@ namespace Bittrex
 {
     public class OpenOrder
     {
+         public string Uuid{get;set;}
         [Key]
-        [Column(Order = 1)]
-        public string Uuid{get;set;}
-        [Key]
-        [Column(Order = 2)]
         public string OrderUuid{get;set;}
 		public string Exchange{get;set;}
 		public OpenOrderType OrderType{get;set;}
