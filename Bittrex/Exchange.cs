@@ -59,7 +59,9 @@ namespace Bittrex
 
         public OrderResponse PlaceBuyOrder(string market, decimal quantity, decimal price)
         {
-            return this.Call<OrderResponse>(ApiCallBuyLimit, Tuple.Create("market", GetMarketName(market)), Tuple.Create("quantity", quantity.ToString()), Tuple.Create("rate", price.ToString()));
+            return this.Call<OrderResponse>(ApiCallBuyLimit, Tuple.Create("market", GetMarketName(market)), 
+                Tuple.Create("quantity", quantity.ToString().Replace(",", ".")), 
+                Tuple.Create("rate", price.ToString().Replace(",",".")));
         }
 
         public OrderResponse PlaceSellOrder(string market, decimal quantity, decimal price)

@@ -2,11 +2,13 @@
 using Bittrex;
 using Bittrex.Data;
 using Bittrex_App.Classes;
+using Bittrex_App.CompratoreAutomatico;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,17 +17,19 @@ namespace Bittrex_App
     class Manager
     {
         ExchangeContext _context = new ExchangeContext();
-        Exchange _exchange = new Exchange();
+        public  Exchange Exchange { get; internal set; } = new Exchange();
         public State.MemoDati Db { get; set; } = new State.MemoDati();
+        public BotCompratore Bot { get; internal set; }
 
         public Manager()
         {
+            Bot = new BotCompratore(this);
             if (!File.Exists(Environment.CurrentDirectory + @"\key.txt"))
             {
 
                 File.Create(Environment.CurrentDirectory + @"\key.txt").Close();
                 File.AppendAllText(Environment.CurrentDirectory + @"\key.txt", "ApiKey=" + Environment.NewLine + "SecretKey=");
-                MessageBox.Show("Imposta key e secretKey nel file "+ Environment.CurrentDirectory + @"\key.txt");
+                MessageBox.Show("Imposta key e secretKey nel file " + Environment.CurrentDirectory + @"\key.txt");
                 return;
             }
             var chiavi = File.ReadLines(Environment.CurrentDirectory + @"\key.txt");
@@ -38,7 +42,7 @@ namespace Bittrex_App
             _context.Secret = chiavi.Where(a => a.StartsWith("SecretKey", StringComparison.InvariantCultureIgnoreCase)).Select(a => a.Substring(a.IndexOf("=") + 1).Trim()).First(); ;
             _context.QuoteCurrency = ",";
             _context.Simulate = false;
-            _exchange.Initialise(_context);
+            Exchange.Initialise(_context);
 
         }
 
@@ -46,20 +50,77 @@ namespace Bittrex_App
         {
             try
             {
-               var dato= _exchange.GetMarketSummaries();
+                Log("Inizio Aggiornamento Sommario ", LogType.Information);
+                var dato = Exchange.GetMarketSummaries();
                 using (UnitOfWork unitOfWork = new UnitOfWork())
                 {
-                    foreach (var item in dato.ToList())
+                    foreach (var item in dato.ToList().Where(a => a.MarketName.StartsWith("BTC")))
                     {
-                        unitOfWork.MarketSummaryResponseRepository.Add(item);
+                        if (unitOfWork.MarketSummaryResponseRepository
+                            .Find(a => a.MarketName == item.MarketName).Select(a=>a.TimeStamp).ToList().Where(a=>item.TimeStamp == a).Count() == 0)
+                        {
+                            try
+                            {
 
+                                unitOfWork.MarketSummaryResponseRepository.Add(item);
+                                unitOfWork.Commit();
+
+                            }
+                            catch (Exception ex)
+                            {
+                                Log(ex);
+                            }
+
+                        }
                     }
-                    unitOfWork.Commit();
                 }
+                Log("Fine Aggiornamento Sommario ", LogType.Information);
             }
             catch (Exception ex)
             {
-                Db.Errori.Add(new ErrorItem(ex));
+                Log(ex);
+            }
+        }
+        internal void Log(string events, LogType logType)
+        {
+            using (UnitOfWork unitOfWork = new UnitOfWork())
+            {
+                unitOfWork.EventLogRepository.Add(new BitRexSql.Entity.EventLog()
+                {
+                    Errore = events,
+                    TipoEvento = logType.ToString(),
+                });
+                unitOfWork.Commit();
+            }
+        }
+        internal void Log(Exception ex)
+        {
+            using (UnitOfWork unitOfWork = new UnitOfWork())
+            {
+                unitOfWork.EventLogRepository.Add(new BitRexSql.Entity.EventLog()
+                {
+                    Errore = ex.Message,
+                    TipoEvento = "Errore",
+                    InnerException = ex.InnerException.ToString(),
+                    StackTrace = ex.StackTrace,
+                    Evento = ""
+                });
+                unitOfWork.Commit();
+            }
+        }
+        public async Task UpdateMarketHystory(CancellationToken token = default(CancellationToken))
+        {
+            while (!token.IsCancellationRequested)
+            {
+                this.AggiornaSommarioMarket();
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(30), token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
             }
         }
         public void FixEfProviderServicesProblem()
@@ -79,7 +140,7 @@ namespace Bittrex_App
         }
         public void AggiornaBilancio()
         {
-            Db.Bilancio = _exchange.GetBalances().Where(a => a.Available != 0 || a.Pending != 0 || a.Balance != 0).ToList();
+            Db.Bilancio = Exchange.GetBalances().Where(a => a.Available != 0 || a.Pending != 0 || a.Balance != 0).ToList();
 
             var conti = new List<State.StatoConto>();
             //prendere i valori e le quantità delle azioni 
@@ -94,7 +155,7 @@ namespace Bittrex_App
                 {
                     try
                     {
-                        var dati = _exchange.GetTicker("BTC-" + item.Currency);
+                        var dati = Exchange.GetTicker("BTC-" + item.Currency);
 
                         conti.Add(new State.StatoConto()
                         {
@@ -111,7 +172,7 @@ namespace Bittrex_App
                     }
                     catch (Exception ex)
                     {
-                        AddLog(ex);
+                       Log(ex);
                     }
                 }
             }
@@ -119,8 +180,8 @@ namespace Bittrex_App
         }
         public void AggiornaOrdini()
         {
-            Db.OpenOrder = _exchange.GetOpenOrders();
-            Db.OrderHistory = _exchange.GetOrderHistory("");
+            Db.OpenOrder = Exchange.GetOpenOrders();
+            Db.OrderHistory = Exchange.GetOrderHistory("");
 
 
             foreach (var item in Db.StatoConto)
@@ -143,10 +204,7 @@ namespace Bittrex_App
                 }
             }
         }
-        private void AddLog(Exception ex)
-        {
-            Db.Errori.Add(new ErrorItem(ex.Message));
-        }
+         
 
     }
 }

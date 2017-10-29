@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace Bittrex
 {
     public class CompletedOrder
     {
+        [Key] 
         public string OrderUuid { get; set; }
         public string Exchange { get; set; }
         public DateTime TimeStamp { get; set; }

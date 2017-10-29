@@ -49,8 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="Entity\MarketSummaryResponse.cs" />
+    <Compile Include="Entity\EventLog.cs" />
     <Compile Include="ModelBitRex\ModelBitRex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repo\IRepository.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace Bittrex
 {
     public class AccountBalance
     {
+        [Key]
         public string Currency { get; set; }
         public decimal Balance { get; set; }
         public decimal Available { get; set; }

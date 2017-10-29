@@ -20,5 +20,6 @@ namespace Bittrex_App.Classes
         }
         public string Errore{ get; set; }
         public DateTime Ora { get; set; }
+        
     }
 }

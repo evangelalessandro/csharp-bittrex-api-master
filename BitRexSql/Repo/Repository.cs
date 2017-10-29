@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BitRexSql.ModelBitRex;
 using System.Data.Entity;
+using System.Linq.Expressions;
 
 namespace BitRexSql.Repo
 {
@@ -21,6 +22,12 @@ namespace BitRexSql.Repo
             dbContext = context;
             dbSet = context.Set<T>();
         }
+
+        public IQueryable<T> Find(Expression<Func<T, bool>> predicate)
+        {
+            return dbSet.Where(predicate);
+        }
+
 
         //Implementation of IRepository methods
         public virtual IEnumerable<T> DataSet { get { return dbSet; } }

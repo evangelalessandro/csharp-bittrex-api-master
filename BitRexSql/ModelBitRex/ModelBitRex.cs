@@ -23,9 +23,34 @@
         // sulla configurazione e sull'utilizzo di un modello Code, vedere http://go.microsoft.com/fwlink/?LinkId=390109.
 
         public virtual DbSet< GetMarketSummaryResponse> MarketSummary { get; set; }
+        public virtual DbSet<OpenOrder> OpenOrder { get; set; }
+        public virtual DbSet<CompletedOrder> CompletedOrder { get; set; }
+        public virtual DbSet<AccountBalance> AccountBalance { get; set; }
+
+        
+        public virtual DbSet<EventLog> EventLog { get; set; }
+
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            Database.SetInitializer<ModelBitRex>(new DropCreateDatabaseIfModelChanges<ModelBitRex>());
+            modelBuilder.Entity<AccountBalance>().Property(e => e.Available).HasPrecision(19, 8);
+            modelBuilder.Entity<AccountBalance>().Property(e => e.Balance).HasPrecision(19, 8);
+            modelBuilder.Entity<AccountBalance>().Property(e => e.Pending).HasPrecision(19, 8);
             
+            modelBuilder.Entity<CompletedOrder>().Property(e => e.Limit).HasPrecision(19, 8);
+            modelBuilder.Entity<CompletedOrder>().Property(e => e.Price).HasPrecision(19, 8);
+            modelBuilder.Entity<CompletedOrder>().Property(e => e.Quantity).HasPrecision(19, 8);
+            modelBuilder.Entity<CompletedOrder>().Property(e => e.QuantityRemaining).HasPrecision(19, 8);
+            modelBuilder.Entity<CompletedOrder>().Property(e => e.Commission).HasPrecision(19, 8);
+
+
+
+            modelBuilder.Entity<OpenOrder>().Property(e => e.Limit).HasPrecision(19, 8);
+            modelBuilder.Entity<OpenOrder>().Property(e => e.Price).HasPrecision(19, 8);
+            modelBuilder.Entity<OpenOrder>().Property(e => e.Quantity).HasPrecision(19, 8);
+            modelBuilder.Entity<OpenOrder>().Property(e => e.QuantityRemaining).HasPrecision(19, 8);
+
             modelBuilder.Entity<GetMarketSummaryResponse>().Property(e => e.High).HasPrecision(19, 8);
             modelBuilder.Entity<GetMarketSummaryResponse>().Property(e => e.Low).HasPrecision(19, 8);
             modelBuilder.Entity<GetMarketSummaryResponse>().Property(e => e.Last).HasPrecision(19, 8);

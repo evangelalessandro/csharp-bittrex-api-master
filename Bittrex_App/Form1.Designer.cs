@@ -39,8 +39,9 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.gvErrori = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.button2 = new System.Windows.Forms.Button();
+            this.btnAggiornaStatoMercato = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gvBalance)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -77,6 +78,7 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -136,21 +138,21 @@
             // 
             this.tabPage2.Controls.Add(this.gvErrori);
             this.tabPage2.Controls.Add(this.label1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 33);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(785, 416);
+            this.tabPage2.Size = new System.Drawing.Size(785, 405);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.Text = "Errori";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // gvErrori
             // 
             this.gvErrori.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gvErrori.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gvErrori.Location = new System.Drawing.Point(3, 16);
+            this.gvErrori.Location = new System.Drawing.Point(3, 27);
             this.gvErrori.Name = "gvErrori";
-            this.gvErrori.Size = new System.Drawing.Size(779, 397);
+            this.gvErrori.Size = new System.Drawing.Size(779, 375);
             this.gvErrori.TabIndex = 0;
             // 
             // label1
@@ -159,9 +161,20 @@
             this.label1.Dock = System.Windows.Forms.DockStyle.Top;
             this.label1.Location = new System.Drawing.Point(3, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(31, 13);
+            this.label1.Size = new System.Drawing.Size(62, 24);
             this.label1.TabIndex = 1;
             this.label1.Text = "Errori";
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.button2);
+            this.tabPage3.Location = new System.Drawing.Point(4, 33);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(785, 405);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Automatico";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // button2
             // 
@@ -173,22 +186,22 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // tabPage3
+            // btnAggiornaStatoMercato
             // 
-            this.tabPage3.Controls.Add(this.button2);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(785, 416);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Automatico";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.btnAggiornaStatoMercato.Location = new System.Drawing.Point(7, 444);
+            this.btnAggiornaStatoMercato.Name = "btnAggiornaStatoMercato";
+            this.btnAggiornaStatoMercato.Size = new System.Drawing.Size(176, 118);
+            this.btnAggiornaStatoMercato.TabIndex = 6;
+            this.btnAggiornaStatoMercato.Text = "Aggiorna stato mercato";
+            this.btnAggiornaStatoMercato.UseVisualStyleBackColor = true;
+            this.btnAggiornaStatoMercato.Click += new System.EventHandler(this.button3_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(793, 641);
+            this.Controls.Add(this.btnAggiornaStatoMercato);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
@@ -222,6 +235,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnAggiornaStatoMercato;
     }
 }
 

@@ -55,6 +55,8 @@
   <ItemGroup>
     <Compile Include="Classes\ErroriList.cs" />
     <Compile Include="Classes\ErrorItem.cs" />
+    <Compile Include="Classes\Utility.cs" />
+    <Compile Include="Classes\LogType.cs" />
     <Compile Include="CompratoreAutomatico\BotCompratore.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

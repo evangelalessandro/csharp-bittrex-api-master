@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace BitRexSql.Repo
         //Method to add row to the table
         void Add(T entity);
 
+        IQueryable<T> Find(Expression<Func<T, bool>> predicate);
 
         //Method to fetch row from the table
         T GetById(int? id);

@@ -14,8 +14,7 @@ namespace Bittrex_App.State
         {
 
         }
-        public ErroriList Errori { get; set; } = new ErroriList();
-
+ 
         public List<StatoConto> StatoConto { get; set; } = new List<State.StatoConto>();
 
         public List<AccountBalance> Bilancio { get; set; } = new List<AccountBalance>();

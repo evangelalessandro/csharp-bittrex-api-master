@@ -21,6 +21,58 @@ namespace BitRexSql.Repo
             //Private members corresponding to each concrete repository
             private Repository<GetMarketSummaryResponse> _MarketSummaryResponseRepository;
 
+            //Private members corresponding to each concrete repository
+            private Repository<OpenOrder> _OpenOrderRepository;
+            //Private members corresponding to each concrete repository
+            private Repository<AccountBalance> _AccountBalanceRepository;
+            //Private members corresponding to each concrete repository
+            private Repository<CompletedOrder> _CompletedOrderRepository;
+            //Private members corresponding to each concrete repository
+            private Repository<EventLog> _EventLogRepository;
+
+
+            //Accessors for each private repository, creates repository if null
+            public IRepository<AccountBalance> AccountBalanceRepository
+            {
+                get
+                {
+                    if (_AccountBalanceRepository == null)
+                    {
+                        _AccountBalanceRepository = new Repository<AccountBalance>(dbContext);
+                    }
+                    return _AccountBalanceRepository;
+                }
+
+            }
+
+            //Accessors for each private repository, creates repository if null
+            public IRepository<CompletedOrder> CompletedOrderRepository
+            {
+                get
+                {
+                    if (_CompletedOrderRepository == null)
+                    {
+                        _CompletedOrderRepository = new Repository<CompletedOrder>(dbContext);
+                    }
+                    return _CompletedOrderRepository;
+                }
+
+            }
+            //Accessors for each private repository, creates repository if null
+            public IRepository<OpenOrder> OpenOrderRepository
+            {
+                get
+                {
+                    if (_OpenOrderRepository == null)
+                    {
+                        _OpenOrderRepository = new Repository<OpenOrder>(dbContext);
+                    }
+                    return _OpenOrderRepository;
+                }
+
+            }
+
+
             //Accessors for each private repository, creates repository if null
             public IRepository<GetMarketSummaryResponse> MarketSummaryResponseRepository
             {
@@ -31,6 +83,21 @@ namespace BitRexSql.Repo
                         _MarketSummaryResponseRepository = new Repository<GetMarketSummaryResponse>(dbContext);
                     }
                     return _MarketSummaryResponseRepository;
+                }
+
+            }
+
+            
+            //Accessors for each private repository, creates repository if null
+            public IRepository<EventLog> EventLogRepository
+            {
+                get
+                {
+                    if (_EventLogRepository == null)
+                    {
+                        _EventLogRepository = new Repository<EventLog>(dbContext);
+                    }
+                    return _EventLogRepository;
                 }
 
             }
