@@ -45,34 +45,44 @@ namespace Bittrex_App
             Exchange.Initialise(_context);
 
         }
-
+        public static object _semaforoThread=new object();
         internal void AggiornaSommarioMarket()
         {
             try
             {
                 Log("Inizio Aggiornamento Sommario ", LogType.Information);
-                var dato = Exchange.GetMarketSummaries();
-                using (UnitOfWork unitOfWork = new UnitOfWork())
+                Monitor.Enter(_semaforoThread);
+                try
                 {
-                    foreach (var item in dato.ToList().Where(a => a.MarketName.StartsWith("BTC")))
+
+                    var dato = Exchange.GetMarketSummaries();
+                    using (UnitOfWork unitOfWork = new UnitOfWork())
                     {
-                        if (unitOfWork.MarketSummaryResponseRepository
-                            .Find(a => a.MarketName == item.MarketName).Select(a => a.TimeStamp).ToList().Where(a => item.TimeStamp == a).Count() == 0)
+                        foreach (var item in dato.ToList().Where(a => a.MarketName.StartsWith("BTC")))
                         {
-                            try
+                            if (unitOfWork.MarketSummaryResponseRepository
+                                .Find(a => a.MarketName == item.MarketName).Select(a => a.TimeStamp).ToList().Where(a => item.TimeStamp == a).Count() == 0)
                             {
+                                try
+                                {
 
-                                unitOfWork.MarketSummaryResponseRepository.Add(item);
-                                unitOfWork.Commit();
+                                    unitOfWork.MarketSummaryResponseRepository.Add(item);
+                                    unitOfWork.Commit();
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log(ex);
+                                }
 
                             }
-                            catch (Exception ex)
-                            {
-                                Log(ex);
-                            }
-
                         }
                     }
+
+                }
+                finally
+                {
+                    Monitor.Exit(_semaforoThread);
                 }
                 Log("Fine Aggiornamento Sommario ", LogType.Information);
             }
@@ -181,7 +191,7 @@ namespace Bittrex_App
         /// <summary>
         /// Aggiorna la lista degli ordini aperti prima prendendola da internet e poi aggiornando quella a db
         /// </summary>
-        public void AggiornaOrdiniAperti()
+        private void AggiornaOrdiniAperti()
         {
             try
             {
@@ -239,10 +249,10 @@ namespace Bittrex_App
         {
             AggiornaOrdiniAperti();
             AggiornaOrdiniCompletati();
-            
+
             foreach (var item in Db.StatoConto)
             {
-                var datiXCurrency = Db.OrderHistory.Where(a => a.Exchange == "BTC-" + item.Currency && a.DaNonConsiderareNelBilancio==false).ToList();
+                var datiXCurrency = Db.OrderHistory.Where(a => a.Exchange == "BTC-" + item.Currency && a.DaNonConsiderareNelBilancio == false).ToList();
                 item.CostoDiVenditaMinimoPerNonPerdere = 0;
                 if (datiXCurrency.Count != 0)
                 {
@@ -279,8 +289,8 @@ namespace Bittrex_App
                                 + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
                                 LogType.Information);
                         }
-                        else if (uof.CompletedOrderRepository.Find(a => item.OrderUuid == a.OrderUuid 
-                                    && a.Quantity == item.Quantity 
+                        else if (uof.CompletedOrderRepository.Find(a => item.OrderUuid == a.OrderUuid
+                                    && a.Quantity == item.Quantity
                                     && a.Quantity == item.QuantityRemaining).Count() == 1)
                         {
                             //non deve fare nulla perchè non è cambiato

@@ -39,8 +39,10 @@
             this.gvErrori = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.button2 = new System.Windows.Forms.Button();
             this.btnAggiornaStatoMercato = new System.Windows.Forms.Button();
+            this.chkAcquisti = new System.Windows.Forms.CheckBox();
+            this.chkVendite = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.gvBalance)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -49,7 +51,7 @@
             this.panel1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvErrori)).BeginInit();
-            this.tabPage3.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // gvBalance
@@ -156,7 +158,6 @@
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.button2);
             this.tabPage3.Location = new System.Drawing.Point(4, 33);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -164,16 +165,6 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Automatico";
             this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(8, 6);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(165, 118);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "Attiva";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // btnAggiornaStatoMercato
             // 
@@ -185,11 +176,45 @@
             this.btnAggiornaStatoMercato.UseVisualStyleBackColor = true;
             this.btnAggiornaStatoMercato.Click += new System.EventHandler(this.button3_Click);
             // 
+            // chkAcquisti
+            // 
+            this.chkAcquisti.AutoSize = true;
+            this.chkAcquisti.Location = new System.Drawing.Point(60, 27);
+            this.chkAcquisti.Name = "chkAcquisti";
+            this.chkAcquisti.Size = new System.Drawing.Size(63, 17);
+            this.chkAcquisti.TabIndex = 7;
+            this.chkAcquisti.Text = "Acquisti";
+            this.chkAcquisti.UseVisualStyleBackColor = true;
+            this.chkAcquisti.CheckedChanged += new System.EventHandler(this.chkAcquisti_CheckedChanged);
+            // 
+            // chkVendite
+            // 
+            this.chkVendite.AutoSize = true;
+            this.chkVendite.Location = new System.Drawing.Point(60, 50);
+            this.chkVendite.Name = "chkVendite";
+            this.chkVendite.Size = new System.Drawing.Size(62, 17);
+            this.chkVendite.TabIndex = 8;
+            this.chkVendite.Text = "Vendite";
+            this.chkVendite.UseVisualStyleBackColor = true;
+            this.chkVendite.CheckedChanged += new System.EventHandler(this.chkVendite_CheckedChanged);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.chkVendite);
+            this.groupBox1.Controls.Add(this.chkAcquisti);
+            this.groupBox1.Location = new System.Drawing.Point(230, 448);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(253, 96);
+            this.groupBox1.TabIndex = 9;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Attiva Bot o spegni";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(793, 641);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnAggiornaStatoMercato);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
@@ -204,7 +229,8 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvErrori)).EndInit();
-            this.tabPage3.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -221,8 +247,10 @@
         private System.Windows.Forms.DataGridView gvErrori;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button btnAggiornaStatoMercato;
+        private System.Windows.Forms.CheckBox chkAcquisti;
+        private System.Windows.Forms.CheckBox chkVendite;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 

@@ -27,13 +27,19 @@
         public virtual DbSet<CompletedOrder> CompletedOrder { get; set; }
         public virtual DbSet<AccountBalance> AccountBalance { get; set; }
 
-        
+        public virtual DbSet<OrdiniDelBot> OrdiniDelBot { get; set; }
+        public virtual DbSet<RulesBuySell> RulesBuySell { get; set; }
+
         public virtual DbSet<EventLog> EventLog { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             Database.SetInitializer<ModelBitRex>(new DropCreateDatabaseIfModelChanges<ModelBitRex>());
+
+            
+            modelBuilder.Entity<RulesBuySell>().Property(e => e.AcquistaImportoMaxBtc).HasPrecision(19, 4);
+
             modelBuilder.Entity<AccountBalance>().Property(e => e.Available).HasPrecision(19, 8);
             modelBuilder.Entity<AccountBalance>().Property(e => e.Balance).HasPrecision(19, 8);
             modelBuilder.Entity<AccountBalance>().Property(e => e.Pending).HasPrecision(19, 8);

@@ -29,7 +29,34 @@ namespace BitRexSql.Repo
             private Repository<CompletedOrder> _CompletedOrderRepository;
             //Private members corresponding to each concrete repository
             private Repository<EventLog> _EventLogRepository;
+            private Repository<RulesBuySell> _RulesRepository;
+            private Repository<OrdiniDelBot> _OrdiniDelBotRepository;
 
+            public IRepository<OrdiniDelBot> OrdiniDelBotRepository
+            {
+                get
+                {
+                    if (_OrdiniDelBotRepository == null)
+                    {
+                        _OrdiniDelBotRepository = new Repository<OrdiniDelBot>(dbContext);
+                    }
+                    return _OrdiniDelBotRepository;
+                }
+
+            }
+            //Accessors for each private repository, creates repository if null
+            public IRepository<RulesBuySell> RulesRepository
+            {
+                get
+                {
+                    if (_RulesRepository == null)
+                    {
+                        _RulesRepository = new Repository<RulesBuySell>(dbContext);
+                    }
+                    return _RulesRepository;
+                }
+
+            }
 
             //Accessors for each private repository, creates repository if null
             public IRepository<AccountBalance> AccountBalanceRepository

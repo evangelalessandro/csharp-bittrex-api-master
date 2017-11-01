@@ -11,6 +11,7 @@ using Bittrex;
 using Bittrex_App.Classes;
 using Bittrex.Data;
 using BitRexSql.Repo.RepoAndUnitOfWork.Domain.Concrete;
+using System.Threading;
 
 namespace Bittrex_App
 {
@@ -32,9 +33,15 @@ namespace Bittrex_App
 
         private void RefreshError()
         {
+            if (this.InvokeRequired)
+            {
+                var inv=new MethodInvoker(RefreshError);
+                inv.Invoke();
+                return;
+            }
+
             using (UnitOfWork unitOfWork = new UnitOfWork())
             {
-
                 var dati = unitOfWork.EventLogRepository.Find(a => 1==1).Select(a=>
                         new { a.Evento, a.TipoEvento, a.TimeStamp, a.InnerException, a.StackTrace })
                     .OrderByDescending(A => A.TimeStamp).Take(1000).ToList();
@@ -48,28 +55,52 @@ namespace Bittrex_App
          
         private void RefreshConti()
         {
+            if (this.InvokeRequired)
+            {
+                var inv = new MethodInvoker(RefreshConti);
+                inv.Invoke();
+                return;
+            }
             gvStato.DataSource = _manager.Db.StatoConto;
             gvStato.Refresh();
         }
 
         private void AggiornaBilancio()
         {
+            if (this.InvokeRequired)
+            {
+                var inv = new MethodInvoker(AggiornaBilancio);
+                inv.Invoke();
+                return;
+            }
             _manager.AggiornaTutto();
             gvBalance.DataSource = _manager.Db.Bilancio.Select(a => new { a.Currency, a.Available, a.Pending, a.Requested, a.Balance }).ToList();
             gvBalance.Refresh();
 
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            _manager.Bot.Avvia();
-
-        }
+         
         private bool _attivaAggiornamento;
         private void button3_Click(object sender, EventArgs e)
         {
             Task ts = new Task(ScaricaAggiornamentiStatoListino);
             ts.Start();
+        }
+        private async Task AggiornaTutto(CancellationToken token = default(CancellationToken))
+        {
+            while (!token.IsCancellationRequested)
+            {
+                this.RefreshError();
+                AggiornaBilancio();
+                RefreshConti();
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(30), token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
         }
         private async void ScaricaAggiornamentiStatoListino()
         {
@@ -120,9 +151,20 @@ namespace Bittrex_App
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        { 
+            AggiornaTutto();
+        }
+
+        private void chkAcquisti_CheckedChanged(object sender, EventArgs e)
         {
-            AggiornaBilancio();
-            RefreshConti();
+            var task=_manager.Bot.BotAcquisto(new System.Threading.CancellationToken(!chkAcquisti.Checked));
+            _manager.Bot.TaskAcquisto = task;
+        }
+
+        private void chkVendite_CheckedChanged(object sender, EventArgs e)
+        {
+            var task=     _manager.Bot.BotControlloPerVendereOrdineAcqBot(new System.Threading.CancellationToken(!chkVendite.Checked));
+            _manager.Bot.TaskVendita = task;
         }
     }
 }
