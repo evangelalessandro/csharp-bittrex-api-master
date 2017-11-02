@@ -66,7 +66,10 @@ namespace Bittrex
 
         public OrderResponse PlaceSellOrder(string market, decimal quantity, decimal price)
         {
-            return this.Call<OrderResponse>(ApiCallSellLimit, Tuple.Create("market", GetMarketName(market)), Tuple.Create("quantity", quantity.ToString()), Tuple.Create("rate", price.ToString()));
+            return this.Call<OrderResponse>(ApiCallSellLimit, 
+                Tuple.Create("market", GetMarketName(market)), 
+                Tuple.Create("quantity", quantity.ToString().Replace(",", ".")), 
+                Tuple.Create("rate", price.ToString().Replace(",", ".")));
         }
 
         public decimal CalculateMinimumOrderQuantity(string market, decimal price)

@@ -19,7 +19,7 @@ namespace Bittrex_App
     {
         Manager _manager = new Manager();
 
-        
+
 
         public Form1()
         {
@@ -35,15 +35,15 @@ namespace Bittrex_App
         {
             if (this.InvokeRequired)
             {
-                var inv=new MethodInvoker(RefreshError);
+                var inv = new MethodInvoker(RefreshError);
                 inv.Invoke();
                 return;
             }
 
             using (UnitOfWork unitOfWork = new UnitOfWork())
             {
-                var dati = unitOfWork.EventLogRepository.Find(a => 1==1).Select(a=>
-                        new { a.Evento, a.TipoEvento, a.TimeStamp, a.InnerException, a.StackTrace })
+                var dati = unitOfWork.EventLogRepository.Find(a => 1 == 1).Select(a =>
+                          new { a.Evento, a.TipoEvento, a.TimeStamp, a.InnerException, a.StackTrace })
                     .OrderByDescending(A => A.TimeStamp).Take(1000).ToList();
 
                 gvErrori.DataSource = dati;
@@ -52,7 +52,7 @@ namespace Bittrex_App
             }
         }
 
-         
+
         private void RefreshConti()
         {
             if (this.InvokeRequired)
@@ -78,7 +78,7 @@ namespace Bittrex_App
             gvBalance.Refresh();
 
         }
-         
+
         private bool _attivaAggiornamento;
         private void button3_Click(object sender, EventArgs e)
         {
@@ -109,13 +109,13 @@ namespace Bittrex_App
             if (_attivaAggiornamento)
             {
                 _manager.UpdateMarketHystory();
-                
+
             }
             else
             {
                 _manager.UpdateMarketHystory(new System.Threading.CancellationToken(true));
             }
-            
+
         }
         // This delegate enables asynchronous calls for setting  
         // the text property on a TextBox control.  
@@ -137,11 +137,11 @@ namespace Bittrex_App
         }
         private void AggiornaLabel()
         {
-            
+
             if (_attivaAggiornamento)
             {
 
-                SetText( "Avviato aggiornamento automatico");
+                SetText("Avviato aggiornamento automatico");
             }
             else
             {
@@ -151,20 +151,20 @@ namespace Bittrex_App
         }
 
         private void Form1_Load(object sender, EventArgs e)
-        { 
+        {
             AggiornaTutto();
         }
 
         private void chkAcquisti_CheckedChanged(object sender, EventArgs e)
         {
-            var task=_manager.Bot.BotAcquisto(new System.Threading.CancellationToken(!chkAcquisti.Checked));
-            _manager.Bot.TaskAcquisto = task;
+            _manager.Bot.AcquistiController.Attiva((!chkAcquisti.Checked));
+
         }
 
         private void chkVendite_CheckedChanged(object sender, EventArgs e)
         {
-            var task=     _manager.Bot.BotControlloPerVendereOrdineAcqBot(new System.Threading.CancellationToken(!chkVendite.Checked));
-            _manager.Bot.TaskVendita = task;
+
+            _manager.Bot.VenditaController.Attiva((!chkVendite.Checked));
         }
     }
 }
