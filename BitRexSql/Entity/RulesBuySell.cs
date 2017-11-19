@@ -16,6 +16,7 @@ namespace BitRexSql.Entity
         public string Exchange { get; set; }
         public decimal VendiSeScendeDiXPercento { get; set; }
         public decimal VendiSeAumentaDiXPercento { get; set; }
+        public decimal AcquistaValoreMassimoUnitario { get; set; }
         public int AcquistaSeAumentatoVolumeDi { get; set; }
         public decimal AcquistaImportoMaxBtc { get; set; }
 

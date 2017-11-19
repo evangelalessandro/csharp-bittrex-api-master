@@ -12,5 +12,6 @@ namespace BitRexSql.Entity
         [Key]
         public string Uuid { get; set; }
         public DateTime DateTimeStamp { get; set; } = DateTime.Now;
+        public string Exchange { get; set; }
     }
 }

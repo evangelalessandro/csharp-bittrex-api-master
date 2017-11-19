@@ -1,0 +1,1 @@
+﻿https://min-api.cryptocompare.com/data/histohour?fsym=BTC&tsym=USD&limit=20&aggregate=3

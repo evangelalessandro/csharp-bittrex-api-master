@@ -39,6 +39,7 @@
 
             
             modelBuilder.Entity<RulesBuySell>().Property(e => e.AcquistaImportoMaxBtc).HasPrecision(19, 4);
+            modelBuilder.Entity<RulesBuySell>().Property(e => e.AcquistaValoreMassimoUnitario).HasPrecision(19, 8);
 
             modelBuilder.Entity<AccountBalance>().Property(e => e.Available).HasPrecision(19, 8);
             modelBuilder.Entity<AccountBalance>().Property(e => e.Balance).HasPrecision(19, 8);

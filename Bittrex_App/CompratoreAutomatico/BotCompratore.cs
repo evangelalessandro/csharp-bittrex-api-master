@@ -83,14 +83,14 @@ namespace Bittrex_App.CompratoreAutomatico
             }
             private void Acquista()
             {
-                Manager.Log("Bot Acquisto in azione", LogType.Information);
+                Log("Bot Acquisto in azione", LogType.Information);
 
                 using (UnitOfWork unitOfWork = new UnitOfWork())
                 {
                     var regole = unitOfWork.RulesRepository.Find(a => 1 == 1).ToList();
                     if (regole.Count == 0)
                     {
-                        Manager.Log("Impostare regole nel db per acquisti e vendite", LogType.Affermation);
+                        Log("Impostare regole nel db per acquisti e vendite", LogType.Affermation);
                         return;
                     }
 
@@ -108,6 +108,8 @@ namespace Bittrex_App.CompratoreAutomatico
                     }
                     foreach (var itemGr in subset.GroupBy(a => a.MarketName))
                     {
+                        if (unitOfWork.OrdiniDelBotRepository.Find(a => a.Exchange == itemGr.Key).Count() > 0)
+                            continue;
                         //a.Exchange=="*" || 
                         var regola = regole.Where(a => itemGr.Key == a.Exchange).FirstOrDefault();
 
@@ -118,6 +120,7 @@ namespace Bittrex_App.CompratoreAutomatico
                         var elementiPerMoneta = itemGr.Where(a => a.MarketName == itemGr.Key).ToList();
                         if (elementiPerMoneta.Count() < 4)
                         {
+                            ///aspetto che scarichi i primi 4 storici
                             continue;
                         }
                         var ultimo = elementiPerMoneta.OrderByDescending(a => a.TimeStamp).ToList().First();
@@ -135,24 +138,37 @@ namespace Bittrex_App.CompratoreAutomatico
                             {
                                 if (regola.AcquistaSeAumentatoVolumeDi != 0)
                                 {
-                                    Manager.Log(string.Format("Acquisto per aumento volume da {0} a {1} con aumento di almeno {2}",
+                                    Log(string.Format("Acquisto per aumento volume da {0} a {1} con aumento di almeno {2}",
                                         precedente.Volume,
                                         ultimo.Volume,
                                         regola.AcquistaSeAumentatoVolumeDi), LogType.Information);
                                 }
                                 else
                                 {
-                                    Manager.Log(string.Format("Acquisto senza regola volume"), LogType.Information);
+                                    Log(string.Format("Acquisto senza regola volume"), LogType.Information);
                                 }
-                                FaiOrdineAcqusto(ultimo.MarketName, regola);
+                                if (regola.AcquistaValoreMassimoUnitario != 0 &&
+                                    ultimo.Last > regola.AcquistaValoreMassimoUnitario)
+                                {
+                                    Log(string.Format("Prezzo troppo alto"), LogType.Information);
+                                }
+                                else
+                                {
+                                    FaiOrdineAcqusto(ultimo.MarketName, regola);
+                                }
                             }
                         }
                         else
                         {
-                            Manager.Log("Trend non in salita, non si acquista!", LogType.Information);
+                            Log("Trend non in salita, non si acquista!", LogType.Information);
                         }
                     }
                 }
+            }
+
+            private void Log(string message, LogType information)
+            {
+                Manager.Log(message, information, "Acquisto", Thread.CurrentThread.ManagedThreadId);
             }
 
             private bool FaiOrdineAcqusto(string moneta, RulesBuySell regola)
@@ -160,19 +176,19 @@ namespace Bittrex_App.CompratoreAutomatico
                 try
                 {
 
-                    Manager.Log("Tentativo di acquisto " + moneta, LogType.Affermation);
+                    Log("Tentativo di acquisto " + moneta, LogType.Affermation);
 
                     var btcAvaliable = Manager.Exchange.GetBalance("BTC").Available;
                     if (btcAvaliable < 0.0005m)
                     {
-                        Manager.Log("Fondi insufficienti per comprare " + moneta, LogType.Warning);
+                        Log("Fondi insufficienti per comprare " + moneta, LogType.Warning);
                         return false;
                     }
-                    Manager.Log(string.Format("Disponibili {0} BTC", btcAvaliable)
+                    Log(string.Format("Disponibili {0} BTC", btcAvaliable)
                         , LogType.Information);
 
                     var valoreAttuale = Manager.Exchange.GetTicker(moneta).Last;
-                    Manager.Log("Il valore attuale moneta " + moneta + " è di " + valoreAttuale + " BTC", LogType.ReadDataFromInternet);
+                    Log("Il valore attuale moneta " + moneta + " è di " + valoreAttuale + " BTC", LogType.ReadDataFromInternet);
 
                     var importobtcAcq = btcAvaliable;
                     if (regola.AcquistaImportoMaxBtc != 0)
@@ -180,32 +196,32 @@ namespace Bittrex_App.CompratoreAutomatico
                         if (btcAvaliable > regola.AcquistaImportoMaxBtc)
                         {
                             importobtcAcq = regola.AcquistaImportoMaxBtc;
-                            Manager.Log(string.Format("Verrà acquistata la moneta " + moneta + " per una spesa massima di {0} BTC", importobtcAcq)
+                            Log(string.Format("Verrà acquistata la moneta " + moneta + " per una spesa massima di {0} BTC", importobtcAcq)
                                 , LogType.ReadDataFromInternet);
 
                         }
                     }
 
 
-                    var qta = Math.Round(importobtcAcq / valoreAttuale,4) ;
+                    var qta = Math.Round(importobtcAcq / valoreAttuale, 4);
                     var prezzo = valoreAttuale;
                     if (regola.AcquistaAlValoreDiLastPiuPercentuale == 0)
                     {
                         prezzo = prezzo * (100 + regola.AcquistaAlValoreDiLastPiuPercentuale) / 100;
                     }
 
-                    Manager.Log(string.Format("Emissione ordine acquisto di moneta {0} al varore {1} rispetto all'attuale di {2} per la qta di {3}",
+                    Log(string.Format("Emissione ordine acquisto di moneta {0} al varore {1} rispetto all'attuale di {2} per la qta di {3}",
                         moneta, valoreAttuale, qta, prezzo), LogType.Buy);
 
                     var ordine = Manager.Exchange.PlaceBuyOrder(moneta, qta, prezzo);
                     if (ordine.uuid != null)
                     {
 
-                        Manager.Log("Ordine creato con successo " + ordine.uuid.ToString(), LogType.Buy);
+                        Log("Ordine creato con successo " + ordine.uuid.ToString(), LogType.Buy);
 
                         using (UnitOfWork unitOfWork = new UnitOfWork())
                         {
-                            unitOfWork.OrdiniDelBotRepository.Add(new OrdiniDelBot() { Uuid = ordine.uuid });
+                            unitOfWork.OrdiniDelBotRepository.Add(new OrdiniDelBot() { Uuid = ordine.uuid, Exchange = moneta });
                             unitOfWork.Commit();
 
                             Manager.AggiornaOrdini();
@@ -229,10 +245,15 @@ namespace Bittrex_App.CompratoreAutomatico
                 }
                 catch (Exception ex)
                 {
-                    Manager.Log(ex);
+                    Log(ex);
                 }
 
                 return false;
+            }
+
+            private void Log(Exception ex)
+            {
+                Manager.Log(ex, "Compratore", Thread.CurrentThread.ManagedThreadId);
             }
         }
         internal class Vendita
@@ -291,7 +312,7 @@ namespace Bittrex_App.CompratoreAutomatico
                         var regole = unitOfWork.RulesRepository.Find(a => 1 == 1).ToList();
                         if (regole.Count == 0)
                         {
-                            Manager.Log("Impostare regole nel db per acquisti e vendite", LogType.Affermation);
+                            Log("Impostare regole nel db per acquisti e vendite", LogType.Affermation);
                             return;
                         }
 
@@ -308,18 +329,19 @@ namespace Bittrex_App.CompratoreAutomatico
 
                             if (regola == null)
                                 regola = regole.Where(a => a.Exchange == "*").FirstOrDefault();
-                            foreach (var item in itemGr.ToList())
-                            {
 
-                                VerificaVendita(regola, item);
-                            }
+                            Parallel.ForEach(itemGr.ToList(), item =>
+
+                                VerificaVendita(regola, item)
+                            );
+
                         }
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    Manager.Log(ex);
+                    Log(ex);
                 }
             }
             /// <summary>
@@ -329,13 +351,27 @@ namespace Bittrex_App.CompratoreAutomatico
             /// <param name="order"></param>
             /// <param name="token"></param>
             /// <returns></returns>
-            public async Task VerificaVenditaTask(RulesBuySell regola, CompletedOrder order, CancellationToken token = default(CancellationToken))
+            public async void  VerificaVenditaTask(RulesBuySell regola, CompletedOrder order, CancellationToken token = default(CancellationToken))
             {
                 while (!token.IsCancellationRequested)
                 {
 
                     if (this.VerificaVendita(regola, order))
                     {
+                        try
+                        {
+                            using (UnitOfWork unitOfWork = new UnitOfWork())
+                            {
+                                var item = unitOfWork.OrdiniDelBotRepository.Find(a => a.Exchange == order.Exchange).FirstOrDefault();
+                                unitOfWork.OrdiniDelBotRepository.Delete(item);
+                                unitOfWork.Commit();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                            Log(ex);
+                        }
                         //se ha venduto termina il task
                         break;
                     }
@@ -351,19 +387,28 @@ namespace Bittrex_App.CompratoreAutomatico
 
             }
 
+            private void Log(Exception ex)
+            {
+                Manager.Log(ex, "Vendita", Thread.CurrentThread.ManagedThreadId);
+            }
+
             private bool VerificaVendita(RulesBuySell regola, CompletedOrder order)
             {
                 try
                 {
                     var valoreAttuale = Manager.Exchange.GetTicker(order.Exchange).Ask;
 
-                    Manager.Log("Il valore attuale moneta " + order.Exchange + " è di " + valoreAttuale + " BTC", LogType.ReadDataFromInternet);
+                    Log("Il valore attuale moneta " + order.Exchange + " è di " + valoreAttuale + " BTC", LogType.ReadDataFromInternet);
 
                     if (regola.VendiSeAumentaDiXPercento > 0)
                     {
+                        if (order.PricePerUnit == 0)
+                        {
+                            order.PricePerUnit = order.Price / order.Quantity;
+                        }
                         if (valoreAttuale > order.PricePerUnit * (regola.VendiSeAumentaDiXPercento + 100) / 100)
                         {
-                            Manager.Log("Raggiunto aumento percentuale di " + regola.VendiSeAumentaDiXPercento
+                            Log("Raggiunto aumento percentuale di " + regola.VendiSeAumentaDiXPercento
                                 + " per moneta " + order.Exchange, LogType.Sell);
 
                             var orderSell = Manager.Exchange.PlaceSellOrder(order.Exchange, order.Quantity, valoreAttuale);
@@ -372,7 +417,7 @@ namespace Bittrex_App.CompratoreAutomatico
                             var orderFound = OrderSelList.Where(a => a.OrderUuid == orderSell.uuid).FirstOrDefault();
                             if (orderFound != null)
                             {
-                                Manager.Log("Vendita completata dell'ordine " + orderFound.OrderUuid + " per moneta " + order.Exchange, LogType.Sell);
+                                Log("Vendita completata dell'ordine " + orderFound.OrderUuid + " per moneta " + order.Exchange, LogType.Sell);
                                 return true;
                             }
                             else
@@ -386,7 +431,7 @@ namespace Bittrex_App.CompratoreAutomatico
                     {
                         if (valoreAttuale > order.PricePerUnit * (100 - regola.VendiSeScendeDiXPercento) / 100)
                         {
-                            Manager.Log("Raggiunto aumento percentuale di " + regola.VendiSeScendeDiXPercento
+                            Log("Raggiunto aumento percentuale di " + regola.VendiSeScendeDiXPercento
                                 + " per moneta " + order.Exchange, LogType.Sell);
 
                             var orderSell = Manager.Exchange.PlaceSellOrder(order.Exchange, order.Quantity, valoreAttuale);
@@ -395,7 +440,7 @@ namespace Bittrex_App.CompratoreAutomatico
                             var orderFound = OrderSelList.Where(a => a.OrderUuid == orderSell.uuid).FirstOrDefault();
                             if (orderFound != null)
                             {
-                                Manager.Log("Vendita completata dell'ordine " + orderFound.OrderUuid + " per moneta " + order.Exchange, LogType.Sell);
+                                Log("Vendita completata dell'ordine " + orderFound.OrderUuid + " per moneta " + order.Exchange, LogType.Sell);
                                 return true;
                             }
                             else
@@ -408,11 +453,15 @@ namespace Bittrex_App.CompratoreAutomatico
                 }
                 catch (Exception ex)
                 {
-                    Manager.Log(ex);
+                    Log(ex);
                 }
                 return false;
             }
 
+            private void Log(string messaggio, LogType sell)
+            {
+                Manager.Log(messaggio, sell, "Vendita", Thread.CurrentThread.ManagedThreadId);
+            }
         }
     }
 }

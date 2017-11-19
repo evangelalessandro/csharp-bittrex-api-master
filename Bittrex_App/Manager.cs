@@ -50,7 +50,7 @@ namespace Bittrex_App
         {
             try
             {
-                Log("Inizio Aggiornamento Sommario ", LogType.Information);
+                Log("Inizio Aggiornamento Sommario ", LogType.Information, "AggiornaSommarioMarket", Thread.CurrentThread.ManagedThreadId); ;
                 Monitor.Enter(_semaforoThread);
                 try
                 {
@@ -72,7 +72,7 @@ namespace Bittrex_App
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log(ex);
+                                    Log(ex,"AggiornaSommarioMarket",Thread.CurrentThread.ManagedThreadId);
                                 }
 
                             }
@@ -84,14 +84,14 @@ namespace Bittrex_App
                 {
                     Monitor.Exit(_semaforoThread);
                 }
-                Log("Fine Aggiornamento Sommario ", LogType.Information);
+                Log("Fine Aggiornamento Sommario ", LogType.Information, "AggiornaSommarioMarket", Thread.CurrentThread.ManagedThreadId);
             }
             catch (Exception ex)
             {
-                Log(ex);
+                Log(ex, "AggiornaSommarioMarket", Thread.CurrentThread.ManagedThreadId);
             }
         }
-        internal void Log(string events, LogType logType)
+        internal void Log(string events, LogType logType, string className, int threadId)
         {
             using (UnitOfWork unitOfWork = new UnitOfWork())
             {
@@ -99,11 +99,13 @@ namespace Bittrex_App
                 {
                     Evento = events,
                     TipoEvento = logType.ToString(),
+                    Class = className,
+                    ThreadId = threadId
                 });
                 unitOfWork.Commit();
             }
         }
-        internal void Log(Exception ex)
+        internal void Log(Exception ex, string  className, int threadId)
         {
             using (UnitOfWork unitOfWork = new UnitOfWork())
             {
@@ -114,6 +116,8 @@ namespace Bittrex_App
                     InnerException = ex.InnerException.ToString(),
                     StackTrace = ex.StackTrace,
                     Evento = ""
+                    , Class = className,
+                    ThreadId = threadId
                 });
                 unitOfWork.Commit();
             }
@@ -182,7 +186,7 @@ namespace Bittrex_App
                     }
                     catch (Exception ex)
                     {
-                        Log(ex);
+                        Log(ex, "AggiornaBilancio", Thread.CurrentThread.ManagedThreadId);
                     }
                 }
             }
@@ -195,7 +199,7 @@ namespace Bittrex_App
         {
             try
             {
-                Log("Aggiornamento lista ordini aperti", LogType.ReadDataFromInternet);
+                Log("Aggiornamento lista ordini aperti", LogType.ReadDataFromInternet, "AggiornaOrdiniAperti",Thread.CurrentThread.ManagedThreadId);
                 Db.OpenOrder = Exchange.GetOpenOrders();
                 using (var uof = new UnitOfWork())
                 {
@@ -207,7 +211,7 @@ namespace Bittrex_App
                             uof.OpenOrderRepository.Add(item);
                             Log("Aggiunto ordine aperto non presente a db " + item.OrderUuid + " " + item.Exchange
                                 + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
-                                LogType.Information);
+                                LogType.Information, "AggiornaOrdiniAperti", Thread.CurrentThread.ManagedThreadId);
                         }
                         else if (uof.OpenOrderRepository.Find(a => item.OrderUuid == a.OrderUuid && a.Quantity == item.Quantity && a.Quantity == item.QuantityRemaining).Count() == 1)
                         {
@@ -220,7 +224,7 @@ namespace Bittrex_App
 
                             Log("Aggiornato ordine aperto " + item.OrderUuid + " " + item.Exchange
                                 + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
-                                LogType.Information);
+                                LogType.Information, "AggiornaOrdiniAperti", Thread.CurrentThread.ManagedThreadId);
                             uof.OpenOrderRepository.Update(itemToUpdate);
                         }
                     }
@@ -234,7 +238,7 @@ namespace Bittrex_App
 
                         Log("Cancellato ordine non più presente in internet " + item.Uuid + " " + item.Exchange
                             + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
-                            LogType.Information);
+                            LogType.Information, "AggiornaOrdiniAperti", Thread.CurrentThread.ManagedThreadId);
                         uof.OpenOrderRepository.Delete(item);
                     }
                     uof.Commit();
@@ -242,7 +246,7 @@ namespace Bittrex_App
             }
             catch (Exception ex)
             {
-                Log(ex);
+                Log(ex, "AggiornaOrdiniAperti", Thread.CurrentThread.ManagedThreadId);
             }
         }
         public void AggiornaOrdini()
@@ -275,7 +279,7 @@ namespace Bittrex_App
         {
             try
             {
-                Log("Aggiornamento lista ordini completati", LogType.ReadDataFromInternet);
+                Log("Aggiornamento lista ordini completati", LogType.ReadDataFromInternet, "AggiornaOrdiniCompletati", Thread.CurrentThread.ManagedThreadId);
                 Db.OrderHistory = Exchange.GetOrderHistory("");
                 using (var uof = new UnitOfWork())
                 {
@@ -287,7 +291,7 @@ namespace Bittrex_App
                             uof.CompletedOrderRepository.Add(item);
                             Log("Aggiunto ordine aperto non presente a db " + item.OrderUuid + " " + item.Exchange
                                 + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
-                                LogType.Information);
+                                LogType.Information, "AggiornaOrdiniCompleti", Thread.CurrentThread.ManagedThreadId);
                         }
                         else if (uof.CompletedOrderRepository.Find(a => item.OrderUuid == a.OrderUuid
                                     && a.Quantity == item.Quantity
@@ -302,7 +306,7 @@ namespace Bittrex_App
 
                             Log("Aggiornato ordine chiuso " + item.OrderUuid + " " + item.Exchange
                                 + " price:" + item.Price.ToString() + " tipo:" + item.OrderType.ToString(),
-                                LogType.Information);
+                                LogType.Information, "AggiornaOrdiniCompleti", Thread.CurrentThread.ManagedThreadId);
                             uof.CompletedOrderRepository.Update(itemToUpdate);
                         }
                     }
@@ -328,7 +332,7 @@ namespace Bittrex_App
             }
             catch (Exception ex)
             {
-                Log(ex);
+                Log(ex, "AggiornaOrdiniCompleti", Thread.CurrentThread.ManagedThreadId);
             }
 
         }
