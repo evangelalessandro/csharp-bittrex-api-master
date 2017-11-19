@@ -44,6 +44,7 @@
             this.chkAcquisti = new System.Windows.Forms.CheckBox();
             this.chkVendite = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnRegoleAcquistoVendita = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gvBalance)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -221,11 +222,22 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Attiva Bot o spegni";
             // 
+            // btnRegoleAcquistoVendita
+            // 
+            this.btnRegoleAcquistoVendita.Location = new System.Drawing.Point(541, 448);
+            this.btnRegoleAcquistoVendita.Name = "btnRegoleAcquistoVendita";
+            this.btnRegoleAcquistoVendita.Size = new System.Drawing.Size(149, 96);
+            this.btnRegoleAcquistoVendita.TabIndex = 10;
+            this.btnRegoleAcquistoVendita.Text = "Regole Acquisto e vendita";
+            this.btnRegoleAcquistoVendita.UseVisualStyleBackColor = true;
+            this.btnRegoleAcquistoVendita.Click += new System.EventHandler(this.btnRegoleAcquistoVendita_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(793, 641);
+            this.Controls.Add(this.btnRegoleAcquistoVendita);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnAggiornaStatoMercato);
             this.Controls.Add(this.tabControl1);
@@ -264,6 +276,7 @@
         private System.Windows.Forms.CheckBox chkVendite;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Button btnRegoleAcquistoVendita;
     }
 }
 

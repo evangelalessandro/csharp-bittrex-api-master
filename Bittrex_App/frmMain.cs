@@ -95,6 +95,7 @@ namespace Bittrex_App
                 try
                 {
                     await Task.Delay(TimeSpan.FromSeconds(30), token);
+
                 }
                 catch (TaskCanceledException)
                 {
@@ -165,6 +166,12 @@ namespace Bittrex_App
         {
 
             _manager.Bot.VenditaController.Attiva((!chkVendite.Checked));
+        }
+
+        private void btnRegoleAcquistoVendita_Click(object sender, EventArgs e)
+        {
+            frmEditRules frm = new frmEditRules(_manager);
+            frm.Show();
         }
     }
 }
